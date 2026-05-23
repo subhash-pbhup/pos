@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner - POS System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .scanner-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .scanner-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .scanner-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .scanner-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .scanner-input {
+            font-size: 18px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .scanner-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .product-list {
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .product-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-info h5 {
+            margin: 0;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .product-info p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .qty-display {
+            font-weight: bold;
+            color: #333;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .checkout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="scanner-container">
+        <div class="scanner-header">
+            <i class="fas fa-barcode" style="font-size: 40px; color: #667eea; margin-bottom: 15px;"></i>
+            <h2>Barcode Scanner</h2>
+            <p>Scan or enter barcode to add products</p>
+        </div>
+        
+        <input 
+            type="text" 
+            class="scanner-input" 
+            id="barcodeInput" 
+            placeholder="Scan barcode here..."
+            autofocus
+        >
+        
+        <div class="product-list" id="productList">
+            <div style="text-align: center; color: #999; padding: 20px;">
+                <i class="fas fa-inbox" style="font-size: 30px;"></i>
+                <p>No products added yet</p>
+            </div>
+        </div>
+        
+        <button class="checkout-btn" onclick="checkout()">
+            <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+        </button>
+    </div>
+
+    <script>
+        let cartItems = [];
+        
+        // Simulate product database (in real app, fetch from server)
+        const products = {
+            '1234567890': { id: '1', name: 'Coca Cola', price: 50, barcode: '1234567890' },
+            '1234567891': { id: '2', name: 'Pepsi', price: 45, barcode: '1234567891' },
+            '1234567892': { id: '3', name: 'Sprite', price: 40, barcode: '1234567892' },
+            '1234567893': { id: '4', name: 'Water Bottle', price: 25, barcode: '1234567893' },
+        };
+        
+        document.getElementById('barcodeInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const barcode = e.target.value.trim();
+                scanBarcode(barcode);
+                e.target.value = '';
+            }
+        });
+        
+        function scanBarcode(barcode) {
+            const product = products[barcode];
+            
+            if (!product) {
+                alert('⚠️ Product not found!');
+                return;
+            }
+            
+            // Check if product already in cart
+            const existingItem = cartItems.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cartItems.push({
+                    ...product,
+                    quantity: 1
+                });
+            }
+            
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            const productList = document.getElementById('productList');
+            
+            if (cartItems.length === 0) {
+                productList.innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        <i class="fas fa-inbox" style="font-size: 30px;"></i>
+                        <p>No products added yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            productList.innerHTML = cartItems.map(item => `
+                <div class="product-item">
+                    <div class="product-info">
+                        <h5>${item.name}</h5>
+                        <p>Barcode: ${item.barcode}</p>
+                    </div>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="changeQty('${item.id}', -1)">-</button>
+                        <span class="qty-display">${item.quantity}</span>
+                        <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                    </div>
+                    <div class="product-price">₹${(item.price * item.quantity).toFixed(2)}</div>
+                    <button class="qty-btn" style="background: #ef4444;" onclick="removeItem('${item.id}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+        
+        function changeQty(productId, change) {
+            const item = cartItems.find(i => i.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeItem(productId);
+                } else {
+                    updateDisplay();
+                }
+            }
+        }
+        
+        function removeItem(productId) {
+            cartItems = cartItems.filter(i => i.id !== productId);
+            updateDisplay();
+        }
+        
+        function checkout() {
+            if (cartItems.length === 0) {
+                alert('Add products to cart first!');
+                return;
+            }
+            
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            alert(`Total: ₹${total.toFixed(2)}\n\nItems: ${cartItems.length}`);
+            
+            // Send to server for checkout
+            console.log('Cart items:', cartItems);
+        }
+    </script>
+</body>
+</html>

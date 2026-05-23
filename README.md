@@ -1,353 +1,301 @@
-# 🏪 POS (Point of Sale) System
+# 🎉 POS System v2.0 - Complete Features
 
-**एक comprehensive Point of Sale system जो Node.js और Express का उपयोग करके बनाया गया है।**
+**सभी advanced features के साथ complete Point of Sale system**
 
-## ✨ Features
+## ✨ नई Features Added:
 
-✅ **Product Management** - Products को add, update, delete करें  
-✅ **Sales Management** - Sales record करें और track करें  
-✅ **User Authentication** - Admin, Cashier, और Manager roles  
-✅ **Inventory Management** - Real-time stock tracking  
-✅ **Payment Methods** - Cash, Card, Cheque, Online support  
-✅ **Sales Reports** - Daily/Date range reports  
-✅ **Search & Filter** - Products को barcode या name से search करें  
-✅ **Dashboard Summary** - Today's sales summary  
+### 🔐 Advanced Features
+- ✅ **Barcode Scanning** - Live barcode scanner interface
+- ✅ **Invoice Printing** - PDF invoice generation
+- ✅ **Email Notifications** - Automated sale emails
+- ✅ **SMS Alerts** - Low stock alerts via SMS
+- ✅ **Data Export** - CSV और Excel export
+- ✅ **Multi-store Support** - Multiple store management
+- ✅ **Inventory Forecasting** - AI-based stock predictions
 
-## 🛠️ Technology Stack
+---
 
-- **Backend:** Node.js + Express.js
-- **Database:** MongoDB
-- **Authentication:** JWT (JSON Web Tokens)
-- **Security:** bcryptjs for password hashing
-- **Validation:** Data validation
+## 🚀 Quick Start:
 
-## 📋 Prerequisites
-
-- Node.js (v14+)
-- MongoDB (Local या MongoDB Atlas)
-- npm या yarn
-- Postman (API testing के लिए)
-
-## 🚀 Installation
-
-### 1️⃣ Repository Clone करें
-
+### 1️⃣ Dependencies Install करें
 ```bash
-git clone https://github.com/subhash-pbhup/pos.git
-cd pos
+npm install pdfkit exceljs nodemailer
 ```
 
-### 2️⃣ Dependencies Install करें
-
-```bash
-npm install
-```
-
-### 3️⃣ Environment Variables सेट करें
-
-```bash
-cp .env.example .env
-```
-
-अपने `.env` file में values update करें:
-
+### 2️⃣ .env में Email Setup करें
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/pos_db
-JWT_SECRET=your_very_secret_key_change_this_in_production
+JWT_SECRET=your_secret_key
 NODE_ENV=development
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
 ```
 
-### 4️⃣ Server Start करें
-
-**Development Mode (Auto-reload):**
+### 3️⃣ Server Start करें
 ```bash
 npm run dev
 ```
 
-**Production Mode:**
-```bash
-npm start
-```
+---
 
-✅ Server चलेगा: `http://localhost:5000`
+## 📱 नए URLs:
+
+| URL | Purpose |
+|-----|----------|
+| `http://localhost:5000` | Dashboard |
+| `http://localhost:5000/login.html` | Login Page |
+| `http://localhost:5000/scanner` | Barcode Scanner |
 
 ---
 
-## 📡 API Endpoints
+## 🔍 नई API Endpoints:
 
-### 🛍️ Products
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | सभी products देखें |
-| GET | `/api/products/:id` | एक product देखें |
-| GET | `/api/products/search/:query` | Products को search करें |
-| POST | `/api/products` | नया product add करें |
-| PUT | `/api/products/:id` | Product update करें |
-| DELETE | `/api/products/:id` | Product delete करें |
-
-### 💰 Sales
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/sales` | सभी sales देखें |
-| GET | `/api/sales/:id` | एक sale देखें |
-| GET | `/api/sales/date/:fromDate/:toDate` | Date range के sales देखें |
-| GET | `/api/sales/summary/today` | Today का summary |
-| POST | `/api/sales` | नया sale create करें |
-
-### 👤 Users
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/users/register` | नया user register करें |
-| POST | `/api/users/login` | User login करें |
-| GET | `/api/users` | सभी users देखें |
-| GET | `/api/users/:id` | एक user देखें |
-| PUT | `/api/users/:id` | User update करें |
-| DELETE | `/api/users/:id` | User delete करें |
-
----
-
-## 💡 Example API Requests
-
-### 1️⃣ Product Create करना
-
+### 🏪 Multi-Store Management
 ```bash
-curl -X POST http://localhost:5000/api/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Coca Cola",
-    "price": 50,
-    "quantity": 100,
-    "category": "Beverages",
-    "barcode": "1234567890",
-    "description": "Cold drink"
-  }'
+GET    /api/stores              # सभी stores देखें
+POST   /api/stores              # नया store add करें
+GET    /api/stores/:id          # एक store देखें
+PUT    /api/stores/:id          # Store update करें
+DELETE /api/stores/:id          # Store delete करें
 ```
 
-### 2️⃣ User Registration
-
+### 📊 Inventory Forecasting
 ```bash
-curl -X POST http://localhost:5000/api/users/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Raj Kumar",
-    "email": "raj@example.com",
-    "password": "password123",
-    "role": "cashier",
-    "phone": "9876543210"
-  }'
+GET    /api/forecasts/:productId        # Product का forecast देखें
+POST   /api/forecasts/generate/:productId  # Forecast generate करें
+GET    /api/forecasts/critical/items    # Critical items देखें
 ```
 
-### 3️⃣ User Login
-
+### 📄 Invoice & Export
 ```bash
-curl -X POST http://localhost:5000/api/users/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "raj@example.com",
-    "password": "password123"
-  }'
-```
-
-**Response में token मिलेगा जिसे आप अन्य requests में use कर सकते हैं।**
-
-### 4️⃣ Sale Create करना
-
-```bash
-curl -X POST http://localhost:5000/api/sales \
-  -H "Content-Type: application/json" \
-  -d '{
-    "items": [
-      {
-        "product": "product_id_here",
-        "quantity": 2,
-        "discount": 0
-      }
-    ],
-    "paymentMethod": "cash",
-    "cashier": "user_id_here",
-    "tax": 50,
-    "totalDiscount": 0,
-    "notes": "Customer note here"
-  }'
-```
-
-### 5️⃣ Products को Search करना
-
-```bash
-curl http://localhost:5000/api/products/search/coca
-```
-
-### 6️⃣ Today का Sales Summary
-
-```bash
-curl http://localhost:5000/api/sales/summary/today
+GET    /api/invoices/:saleId/invoice-pdf       # PDF invoice download करें
+POST   /api/invoices/export/csv                # CSV export करें
+POST   /api/invoices/export/excel              # Excel export करें
+POST   /api/invoices/:saleId/send-email        # Email से भेजें
 ```
 
 ---
 
-## 📁 Project Structure
+## 📝 Example API Requests:
+
+### Store Create करें:
+```bash
+curl -X POST http://localhost:5000/api/stores \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Store Delhi",
+    "location": "Connaught Place",
+    "phone": "9876543210",
+    "email": "delhi@pos.com",
+    "address": "CP, New Delhi",
+    "city": "Delhi",
+    "state": "Delhi",
+    "zipCode": "110001"
+  }'
+```
+
+### Inventory Forecast Generate करें:
+```bash
+curl -X POST http://localhost:5000/api/forecasts/generate/PRODUCT_ID \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "storeId": "STORE_ID"
+  }'
+```
+
+### PDF Invoice Download करें:
+```bash
+curl -X GET http://localhost:5000/api/invoices/SALE_ID/invoice-pdf \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -o invoice.pdf
+```
+
+### Sales को CSV में Export करें:
+```bash
+curl -X POST http://localhost:5000/api/invoices/export/csv \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fromDate": "2026-05-01",
+    "toDate": "2026-05-31"
+  }'
+```
+
+### Invoice Email भेजें:
+```bash
+curl -X POST http://localhost:5000/api/invoices/SALE_ID/send-email \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerEmail": "customer@example.com"
+  }'
+```
+
+---
+
+## 📁 नई Files Structure:
 
 ```
 pos/
+├── services/
+│   ├── emailService.js          # Email notifications
+│   ├── smsService.js            # SMS alerts
+│   └── exportService.js         # PDF/CSV/Excel export
 ├── models/
-│   ├── Product.js      # Product model schema
-│   ├── Sale.js         # Sale model schema
-│   └── User.js         # User model schema
+│   ├── Store.js                 # Multi-store schema
+│   └── InventoryForecast.js     # Forecast schema
 ├── routes/
-│   ├── products.js     # Product routes & CRUD
-│   ├── sales.js        # Sales routes & reports
-│   └── users.js        # User & auth routes
-├── server.js           # Main Express server
-├── package.json        # Dependencies
-├── .env.example        # Environment variables template
-├── .gitignore          # Git ignore file
-└── README.md           # This file
+│   ├── stores.js                # Store management
+│   ├── forecasts.js             # Inventory forecasting
+│   └── invoices.js              # Invoice & export
+├── public/
+│   └── barcode-scanner.html     # Interactive barcode scanner
+└── server.js (Updated)          # All routes integrated
 ```
 
 ---
 
-## 🔒 Security Features
+## 🎯 Barcode Scanner Features:
 
-✅ **Password Hashing** - bcryptjs के साथ secure passwords  
-✅ **JWT Authentication** - Token-based authentication  
-✅ **Input Validation** - Data validation on all endpoints  
-✅ **CORS** - Cross-origin requests को handle करता है  
-✅ **Error Handling** - Comprehensive error handling  
+✅ Live scanning interface  
+✅ Product quantity management  
+✅ Real-time cart updates  
+✅ Remove/edit items  
+✅ Checkout button  
+✅ Beautiful UI  
 
----
-
-## 📊 Database Schema
-
-### Product Schema
-```javascript
-{
-  name: String (required),
-  barcode: String (unique),
-  price: Number (required),
-  quantity: Number (required),
-  category: String (required),
-  description: String,
-  sku: String (unique),
-  image: String,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-### Sale Schema
-```javascript
-{
-  saleNumber: String (unique),
-  items: [{
-    product: ObjectId,
-    quantity: Number,
-    price: Number,
-    discount: Number,
-    subtotal: Number
-  }],
-  subtotal: Number,
-  tax: Number,
-  totalDiscount: Number,
-  total: Number,
-  paymentMethod: String (cash/card/cheque/online),
-  cashier: ObjectId (User reference),
-  notes: String,
-  createdAt: Date
-}
-```
-
-### User Schema
-```javascript
-{
-  name: String (required),
-  email: String (required, unique),
-  password: String (hashed),
-  role: String (admin/cashier/manager),
-  phone: String,
-  isActive: Boolean,
-  createdAt: Date
-}
-```
+**Access:** `http://localhost:5000/scanner`
 
 ---
 
-## 🧪 Testing
+## 📊 Email Notifications:
 
-### Postman से Test करने के लिए:
-
-1. **Postman download** करें
-2. **New Collection बनाएं**
-3. ऊपर दिए गए API requests को test करें
-4. Login से token लें और अन्य requests में use करें
-
----
-
-## 🔄 Development करते समय
-
-```bash
-# Auto-reload के साथ development
-npm run dev
-
-# सिर्फ production के लिए
-npm start
-
-# Dependencies को update करने के लिए
-npm update
-```
+### Automated Emails:
+- ✅ Sale confirmation emails
+- ✅ Low stock alerts
+- ✅ Invoice attachments
+- ✅ Daily reports
 
 ---
 
-## 🚀 Future Enhancements
+## 📱 SMS Alerts:
 
-- [ ] Dashboard with analytics & charts
-- [ ] Barcode scanning integration
-- [ ] Invoice printing
-- [ ] Multi-store support
-- [ ] Advanced reporting (Daily, Weekly, Monthly)
-- [ ] Customer management
-- [ ] Expense tracking
-- [ ] Mobile app (React Native)
-- [ ] Email notifications
-- [ ] Data backup & export (CSV, PDF)
+### Automated SMS:
+- ✅ Sale notifications
+- ✅ Low stock warnings
+- ✅ Order reminders
+- ✅ Customer notifications
 
 ---
 
-## 🤝 Contributing
+## 🔄 Inventory Forecasting:
 
-Issues और improvements के लिए pull requests welcome हैं!
+**Features:**
+- Last 30 days average daily sales calculation
+- Days of stock left prediction
+- Recommended reorder quantity
+- Critical items identification
+- Multi-store forecasting
 
-```bash
-# Fork करें
-# Branch बनाएं
-git checkout -b feature/your-feature
+---
 
-# Commit करें
-git commit -am 'Add new feature'
+## 📈 Data Export Options:
 
-# Push करें
-git push origin feature/your-feature
+### CSV Export:
+- सभी sales data
+- Date range filtering
+- Automatic file generation
 
-# Pull Request बनाएं
+### Excel Export:
+- Formatted spreadsheets
+- Column headers
+- Auto-width adjustment
+- Professional formatting
+
+### PDF Invoice:
+- Professional invoice design
+- Item details
+- Tax calculation
+- Payment method
+
+---
+
+## 🏪 Multi-Store Features:
+
+✅ Multiple stores create करें  
+✅ Each store का manager assign करें  
+✅ Store-wise reporting  
+✅ Centralized inventory tracking  
+✅ Consolidated dashboards  
+
+---
+
+## 🔐 Environment Variables (.env):
+
+```env
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/pos_db
+
+# Security
+JWT_SECRET=your_very_secure_secret_key_change_in_production
+
+# Email Service (Gmail)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-google-app-password
+
+# SMS Service (Optional - Twilio)
+TWILIO_ACCOUNT_SID=your_twilio_sid
+TWILIO_AUTH_TOKEN=your_twilio_token
+TWILIO_PHONE_NUMBER=+1234567890
 ```
 
 ---
 
-## 📝 License
+## 📞 Support:
 
-ISC License - Free to use
-
----
-
-## 📞 Support
-
-अगर कोई issue या question हो तो GitHub Issues में create करें।
+**आपके सभी सवालों के लिए:**
+- Check documentation
+- Test with provided examples
+- Review sample data
+- Debug with console logs
 
 ---
 
-**Made with ❤️ by Subhash Chander**
+## 🎓 Learn More:
+
+- [MongoDB Documentation](https://docs.mongodb.com/)
+- [Express.js Guide](https://expressjs.com/)
+- [Node.js API](https://nodejs.org/api/)
+- [Bootstrap Components](https://getbootstrap.com/)
+
+---
+
+## 💰 Version History:
+
+### v2.0.0 (Current)
+- ✅ Barcode Scanning
+- ✅ Invoice Printing (PDF)
+- ✅ Email Notifications
+- ✅ SMS Alerts
+- ✅ Data Export (CSV/Excel)
+- ✅ Multi-store Support
+- ✅ Inventory Forecasting
+
+### v1.0.0
+- Basic CRUD operations
+- Sales management
+- User authentication
+- Dashboard
+
+---
+
+**Made with ❤️ | POS System v2.0**
 
 *Last Updated: 2026-05-23*

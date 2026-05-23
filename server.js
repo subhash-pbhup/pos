@@ -27,19 +27,34 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/reports', require('./routes/reports'));
+app.use('/api/stores', require('./routes/stores'));
+app.use('/api/forecasts', require('./routes/forecasts'));
+app.use('/api/invoices', require('./routes/invoices'));
 
 // Welcome Route
 app.get('/api', (req, res) => {
   res.json({ 
-    message: 'Welcome to POS System API',
-    version: '1.0.0',
+    message: 'Welcome to POS System API v2.0',
+    version: '2.0.0',
+    features: [
+      'Barcode Scanning',
+      'Invoice Printing',
+      'Email Notifications',
+      'SMS Alerts',
+      'Data Export (CSV/PDF)',
+      'Multi-store Support',
+      'Inventory Forecasting'
+    ],
     endpoints: {
       products: '/api/products',
       sales: '/api/sales',
       users: '/api/users',
       customers: '/api/customers',
       expenses: '/api/expenses',
-      reports: '/api/reports'
+      reports: '/api/reports',
+      stores: '/api/stores',
+      forecasts: '/api/forecasts',
+      invoices: '/api/invoices'
     }
   });
 });
@@ -47,6 +62,11 @@ app.get('/api', (req, res) => {
 // Serve frontend
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Barcode scanner page
+app.get('/scanner', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'barcode-scanner.html'));
 });
 
 // Error handling middleware
@@ -66,7 +86,14 @@ app.use((req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`\n✓ Server running on http://localhost:${PORT}`);
+  console.log(`
+╔════════════════════════════════════════════════╗`);
+  console.log(`║   POS System v2.0 - Full Featured           ║`);
+  console.log(`╚════════════════════════════════════════════════╝
+`);
+  console.log(`✓ Server: http://localhost:${PORT}`);
   console.log(`✓ Frontend: http://localhost:${PORT}`);
-  console.log(`✓ API: http://localhost:${PORT}/api\n`);
+  console.log(`✓ API: http://localhost:${PORT}/api`);
+  console.log(`✓ Scanner: http://localhost:${PORT}/scanner`);
+  console.log(`✓ Login: http://localhost:${PORT}/login.html\n`);
 });
