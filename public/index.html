@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        body {
+            background: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, #3730a3 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            color: white;
+            position: fixed;
+            width: 280px;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar .logo h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .sidebar .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar .nav-item:hover,
+        .sidebar .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #fbbf24;
+        }
+        
+        .sidebar .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-card.success .stat-value { color: var(--success); }
+        .stat-card.warning .stat-value { color: var(--warning); }
+        .stat-card.danger .stat-value { color: var(--danger); }
+        
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
+        
+        table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .modal {
+            backdrop-filter: blur(5px);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shopping-cart" style="font-size: 30px;"></i>
+            <h4>POS System</h4>
+            <small>v1.0</small>
+        </div>
+        <div class="nav">
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="nav-item" onclick="showSection('sales')">
+                <i class="fas fa-shopping-bag"></i> Sales
+            </div>
+            <div class="nav-item" onclick="showSection('products')">
+                <i class="fas fa-boxes"></i> Products
+            </div>
+            <div class="nav-item" onclick="showSection('customers')">
+                <i class="fas fa-users"></i> Customers
+            </div>
+            <div class="nav-item" onclick="showSection('expenses')">
+                <i class="fas fa-receipt"></i> Expenses
+            </div>
+            <div class="nav-item" onclick="showSection('reports')">
+                <i class="fas fa-file-chart-line"></i> Reports
+            </div>
+            <div class="nav-item" onclick="showSection('users')">
+                <i class="fas fa-cog"></i> Users
+            </div>
+            <div class="nav-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h3>Welcome to POS System</h3>
+                <small id="username">User</small>
+            </div>
+            <div>
+                <span id="current-time"></span>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <h4 class="mb-4">Dashboard</h4>
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-label">Today's Revenue</div>
+                        <div class="stat-value">₹<span id="today-revenue">0</span></div>
+                        <small class="text-muted">from sales</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="stat-label">Transactions</div>
+                        <div class="stat-value" id="today-transactions">0</div>
+                        <small class="text-muted">total sales</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card warning">
+                        <div class="stat-label">Total Products</div>
+                        <div class="stat-value" id="total-products">0</div>
+                        <small class="text-muted">in inventory</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card danger">
+                        <div class="stat-label">Low Stock</div>
+                        <div class="stat-value" id="low-stock">0</div>
+                        <small class="text-muted">products</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Section -->
+        <div id="sales" class="section" style="display: none;">
+            <h4 class="mb-4">Sales</h4>
+            <button class="btn btn-primary mb-3" onclick="showModal('newSaleModal')">New Sale</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sale #</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Cashier</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products" class="section" style="display: none;">
+            <h4 class="mb-4">Products</h4>
+            <button class="btn btn-primary mb-3" onclick="showModal('newProductModal')">Add Product</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Customers Section -->
+        <div id="customers" class="section" style="display: none;">
+            <h4 class="mb-4">Customers</h4>
+            <button class="btn btn-primary mb-3" onclick="showModal('newCustomerModal')">Add Customer</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Total Purchases</th>
+                            <th>Points</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Expenses Section -->
+        <div id="expenses" class="section" style="display: none;">
+            <h4 class="mb-4">Expenses</h4>
+            <button class="btn btn-primary mb-3" onclick="showModal('newExpenseModal')">Add Expense</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Created By</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenses-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section" style="display: none;">
+            <h4 class="mb-4">Reports</h4>
+            <button class="btn btn-primary mb-3" onclick="generateReport()">Generate Daily Report</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Type</th>
+                            <th>Date Range</th>
+                            <th>Total Sales</th>
+                            <th>Transactions</th>
+                            <th>Profit</th>
+                            <th>Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="section" style="display: none;">
+            <h4 class="mb-4">Users Management</h4>
+            <button class="btn btn-primary mb-3" onclick="showModal('newUserModal')">Add User</button>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="newProductModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <div class="mb-3">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-control" id="productCategory" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="number" class="form-control" id="productPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="productQuantity" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let token = localStorage.getItem('token');
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            if (section === 'dashboard') loadDashboard();
+            if (section === 'sales') loadSales();
+            if (section === 'products') loadProducts();
+            if (section === 'customers') loadCustomers();
+            if (section === 'expenses') loadExpenses();
+            if (section === 'reports') loadReports();
+            if (section === 'users') loadUsers();
+        }
+
+        function showModal(modalId) {
+            new bootstrap.Modal(document.getElementById(modalId)).show();
+        }
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API_BASE}/reports/dashboard/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('today-revenue').textContent = data.data.todayRevenue.toFixed(2);
+                    document.getElementById('today-transactions').textContent = data.data.todayTransactions;
+                    document.getElementById('total-products').textContent = data.data.totalProducts;
+                    document.getElementById('low-stock').textContent = data.data.lowStockProducts;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadSales() {
+            try {
+                const res = await fetch(`${API_BASE}/sales`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(sale => {
+                    html += `<tr>
+                        <td>${sale.saleNumber}</td>
+                        <td>${sale.items.length}</td>
+                        <td>₹${sale.total.toFixed(2)}</td>
+                        <td>${sale.paymentMethod}</td>
+                        <td>${sale.cashier.name}</td>
+                        <td>${new Date(sale.createdAt).toLocaleDateString()}</td>
+                        <td><button class="btn btn-sm btn-info">View</button></td>
+                    </tr>`;
+                });
+                document.getElementById('sales-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/products`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(product => {
+                    const status = product.quantity > 10 ? 'In Stock' : product.quantity > 0 ? 'Low Stock' : 'Out of Stock';
+                    const statusClass = product.quantity > 10 ? 'success' : product.quantity > 0 ? 'warning' : 'danger';
+                    html += `<tr>
+                        <td>${product.name}</td>
+                        <td>${product.category}</td>
+                        <td>₹${product.price}</td>
+                        <td>${product.quantity}</td>
+                        <td><span class="badge bg-${statusClass}">${status}</span></td>
+                        <td><button class="btn btn-sm btn-warning">Edit</button></td>
+                    </tr>`;
+                });
+                document.getElementById('products-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadCustomers() {
+            try {
+                const res = await fetch(`${API_BASE}/customers`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(customer => {
+                    html += `<tr>
+                        <td>${customer.name}</td>
+                        <td>${customer.phone}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.totalPurchases}</td>
+                        <td>${customer.loyaltyPoints}</td>
+                        <td><button class="btn btn-sm btn-warning">Edit</button></td>
+                    </tr>`;
+                });
+                document.getElementById('customers-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadExpenses() {
+            try {
+                const res = await fetch(`${API_BASE}/expenses`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(expense => {
+                    html += `<tr>
+                        <td>${expense.description}</td>
+                        <td>${expense.category}</td>
+                        <td>₹${expense.amount.toFixed(2)}</td>
+                        <td>${expense.paymentMethod}</td>
+                        <td>${expense.createdBy.name}</td>
+                        <td>${new Date(expense.createdAt).toLocaleDateString()}</td>
+                        <td><button class="btn btn-sm btn-danger">Delete</button></td>
+                    </tr>`;
+                });
+                document.getElementById('expenses-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadReports() {
+            try {
+                const res = await fetch(`${API_BASE}/reports`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(report => {
+                    html += `<tr>
+                        <td>${report.reportType}</td>
+                        <td>${new Date(report.startDate).toLocaleDateString()} - ${new Date(report.endDate).toLocaleDateString()}</td>
+                        <td>₹${report.totalSales.toFixed(2)}</td>
+                        <td>${report.totalTransactions}</td>
+                        <td>₹${report.totalProfit.toFixed(2)}</td>
+                        <td>${new Date(report.createdAt).toLocaleDateString()}</td>
+                    </tr>`;
+                });
+                document.getElementById('reports-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                let html = '';
+                data.data.forEach(user => {
+                    html += `<tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td><span class="badge bg-primary">${user.role}</span></td>
+                        <td>${user.phone}</td>
+                        <td>${user.isActive ? 'Active' : 'Inactive'}</td>
+                        <td><button class="btn btn-sm btn-warning">Edit</button></td>
+                    </tr>`;
+                });
+                document.getElementById('users-table-body').innerHTML = html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function generateReport() {
+            try {
+                const res = await fetch(`${API_BASE}/reports/generate/daily`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Report generated successfully!');
+                    loadReports();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Update time
+        setInterval(() => {
+            document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Load dashboard on startup
+        window.addEventListener('load', () => {
+            loadDashboard();
+            document.getElementById('username').textContent = localStorage.getItem('username') || 'User';
+        });
+    </script>
+</body>
+</html>
